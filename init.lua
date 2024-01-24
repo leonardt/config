@@ -33,8 +33,8 @@ vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]])
 
 vim.env.GIT_EDITOR = 'nvr -cc split --remote-wait'
 
-autocmd(
+vim.api.nvim_create_autocmd(
   'FileType', 
-  pattern={'gitcommit', 'gitrebase'},
-  command='gitconfig set bufhidden=delete'
+  {pattern={'gitcommit', 'gitrebase', 'gitconfig'},
+   command=[[set bufhidden=delete]]}
 )
