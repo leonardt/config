@@ -1,4 +1,4 @@
 ```bash
 mkdkir -p $HOME/.config
-ln -s `pwd`/init.lua $HOME/.config/init.lua
+ln -s `pwd`/init.lua $HOME/.config/nvim/init.lua
 ```
