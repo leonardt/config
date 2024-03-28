@@ -14,12 +14,12 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = " "
 
 require("lazy").setup({
-  {'nvim-telescope/telescope.nvim', 
+  {'nvim-telescope/telescope.nvim',
    tag = '0.1.5',
    dependencies = { 'nvim-lua/plenary.nvim' },
    lazy = false},
   {"catppuccin/nvim", name = "catppuccin", priority = 1000},
-  {"nvim-treesitter/nvim-treesitter", 
+  {"nvim-treesitter/nvim-treesitter",
    build = ":TSUpdate",
    config = function ()
      local configs = require("nvim-treesitter.configs")
@@ -103,12 +103,22 @@ require("lazy").setup({
 
      -- Set up lspconfig.
      local capabilities = require('cmp_nvim_lsp').default_capabilities()
-     -- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
-     require('lspconfig')['pylsp'].setup {}
    end
-  }
+  },
+  {"cappyzawa/trim.nvim", opts = {ft_blocklist = {"markdown"}}},
+  {"numToStr/Comment.nvim", lazy = false}
 })
 
+vim.opt.autoindent = true
+vim.opt.smartindent = true
+vim.opt.tabstop = 4
+vim.opt.softtabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.smarttab = true
+vim.opt.expandtab = true
+
+vim.opt.number = true
+vim.opt.relativenumber = true
 
 vim.cmd.colorscheme "catppuccin"
 
@@ -123,12 +133,12 @@ vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]])
 vim.env.GIT_EDITOR = 'nvr -cc split --remote-wait'
 
 vim.api.nvim_create_autocmd(
-  'FileType', 
+  'FileType',
   {pattern={'gitcommit', 'gitrebase', 'gitconfig'},
    command=[[set bufhidden=delete]]}
 )
 
--- Global mappings.
+-- Global mapping
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 
 vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
@@ -136,6 +146,8 @@ vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
 vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist)
 
+
+ require('lspconfig')['pylsp'].setup {}
 
 -- Use LspAttach autocommand to only map the following keys
 -- after the language server attaches to the current buffer
@@ -169,3 +181,21 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end, opts)
   end,
 })
+
+require('Comment').setup()
+
+-- Use system clipboard / WSL fix
+if vim.fn.has('wsl') == 1 then
+    vim.g.clipboard = {
+        name = 'WslClipboard',
+        copy = {
+            ['+'] = 'clip.exe',
+            ['*'] = 'clip.exe',
+        },
+        paste = {
+            ['+'] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+            ['*'] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+        },
+        cache_enabled = 0,
+    }
+end
