@@ -56,13 +56,13 @@ require("lazy").setup({
          ['<C-Space>'] = cmp.mapping.complete(),
          ['<C-e>'] = cmp.mapping.abort(),
 
-         ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+         --['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
        }),
        sources = cmp.config.sources({
          { name = 'nvim_lsp' },
 
-         { name = 'vsnip' }, -- For vsnip users.
-         -- { name = 'luasnip' }, -- For luasnip users.
+         -- { name = 'vsnip' }, -- For vsnip users.
+         { name = 'luasnip' }, -- For luasnip users.
          -- { name = 'ultisnips' }, -- For ultisnips users.
          -- { name = 'snippy' }, -- For snippy users.
        }, {
@@ -106,7 +106,20 @@ require("lazy").setup({
    end
   },
   {"cappyzawa/trim.nvim", opts = {ft_blocklist = {"markdown"}}},
-  {"numToStr/Comment.nvim", lazy = false}
+  {"numToStr/Comment.nvim", lazy = false},
+  {
+    'stevearc/overseer.nvim',
+    opts = {},
+  },
+  {"m4xshen/autoclose.nvim"},
+  {
+    "L3MON4D3/LuaSnip",
+    -- follow latest release.
+    version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
+  	-- install jsregexp (optional!).
+    build = "make install_jsregexp",
+    dependencies = { "rafamadriz/friendly-snippets" },
+  }
 })
 
 vim.opt.autoindent = true
@@ -148,6 +161,7 @@ vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist)
 
 
  require('lspconfig')['pylsp'].setup {}
+ require('lspconfig')['texlab'].setup {}
 
 -- Use LspAttach autocommand to only map the following keys
 -- after the language server attaches to the current buffer
@@ -199,3 +213,18 @@ if vim.fn.has('wsl') == 1 then
         cache_enabled = 0,
     }
 end
+
+require('overseer').setup()
+require('autoclose').setup()
+
+ls = require("luasnip")
+require("luasnip.loaders.from_vscode").lazy_load()
+vim.keymap.set({"i"}, "<C-K>", function() ls.expand() end, {silent = true})
+vim.keymap.set({"i", "s"}, "<C-L>", function() ls.jump( 1) end, {silent = true})
+vim.keymap.set({"i", "s"}, "<C-J>", function() ls.jump(-1) end, {silent = true})
+
+vim.keymap.set({"i", "s"}, "<C-E>", function()
+	if ls.choice_active() then
+		ls.change_choice(1)
+	end
+end, {silent = true})
