@@ -160,7 +160,18 @@ vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
 vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist)
 
 
- require('lspconfig')['pylsp'].setup {}
+ require('lspconfig')['pylsp'].setup {
+  settings = {
+    pylsp = {
+      plugins = {
+        ruff = {
+          enabled = true,
+          formatEnabled = true,
+        }
+      }
+    }
+  }
+}
  require('lspconfig')['texlab'].setup {}
 
 -- Use LspAttach autocommand to only map the following keys
