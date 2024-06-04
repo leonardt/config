@@ -1,7 +1,9 @@
 ```bash
-# cargo/tree-sitter-cli
-curl https://sh.rustup.rs -sSf | sh
-cargo install tree-sitter-cli
+# tree-sitter-cli
+brew install tree-sitter
+# or w/ cargo
+# curl https://sh.rustup.rs -sSf | sh
+# cargo install tree-sitter-cli
 
 pip install neovim python-lsp-server python-lsp-ruff
 
