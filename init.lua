@@ -18,7 +18,20 @@ require("lazy").setup({
    tag = '0.1.5',
    dependencies = { 'nvim-lua/plenary.nvim' },
    lazy = false},
-  {"catppuccin/nvim", name = "catppuccin", priority = 1000},
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 1000,
+    opts = {
+      color_overrides = {
+        mocha = {
+          base = "#000000",
+          mantle = "#000000",
+          crust = "#000000"
+        }
+      }
+    }
+  },
   {"nvim-treesitter/nvim-treesitter",
    build = ":TSUpdate",
    config = function ()
@@ -105,7 +118,7 @@ require("lazy").setup({
      local capabilities = require('cmp_nvim_lsp').default_capabilities()
    end
   },
-  {"cappyzawa/trim.nvim", opts = {ft_blocklist = {"markdown"}}},
+  -- {"cappyzawa/trim.nvim", opts = {ft_blocklist = {"markdown"}}},
   {"numToStr/Comment.nvim", lazy = false},
   {
     'stevearc/overseer.nvim',
@@ -119,6 +132,40 @@ require("lazy").setup({
   	-- install jsregexp (optional!).
     build = "make install_jsregexp",
     dependencies = { "rafamadriz/friendly-snippets" },
+  },
+  {'shaunsingh/nord.nvim'},
+  {
+    'nvim-lualine/lualine.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' }
+  },
+  {
+    "kylechui/nvim-surround",
+    version = "*", -- Use for stability; omit to use `main` branch for the latest features
+    event = "VeryLazy",
+    config = function()
+        require("nvim-surround").setup({
+            -- Configuration here, or leave empty to use defaults
+        })
+    end
+  },
+  {
+    "willothy/flatten.nvim",
+    config = true,
+    -- Ensure that it runs first to minimize delay when opening file from terminal
+    lazy = false,
+    priority = 1001,
+  },
+  {
+  "NeogitOrg/neogit",
+    dependencies = {
+      "nvim-lua/plenary.nvim",         -- required
+      "sindrets/diffview.nvim",        -- optional - Diff integration
+      "nvim-telescope/telescope.nvim", -- optional
+    },
+    config = true
+  },
+  {
+    "lewis6991/gitsigns.nvim"
   }
 })
 
@@ -139,7 +186,8 @@ vim.opt.expandtab = true
 vim.opt.number = true
 vim.opt.relativenumber = true
 
-vim.cmd.colorscheme "catppuccin"
+vim.cmd.colorscheme "catppuccin-mocha"
+require('lualine').setup()
 
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>ff', builtin.git_files, {})
@@ -246,3 +294,50 @@ vim.keymap.set({"i", "s"}, "<C-E>", function()
 		ls.change_choice(1)
 	end
 end, {silent = true})
+
+require('gitsigns').setup{
+  on_attach = function(bufnr)
+    local gitsigns = require('gitsigns')
+
+    local function map(mode, l, r, opts)
+      opts = opts or {}
+      opts.buffer = bufnr
+      vim.keymap.set(mode, l, r, opts)
+    end
+
+    -- Navigation
+    map('n', ']c', function()
+      if vim.wo.diff then
+        vim.cmd.normal({']c', bang = true})
+      else
+        gitsigns.nav_hunk('next')
+      end
+    end)
+
+    map('n', '[c', function()
+      if vim.wo.diff then
+        vim.cmd.normal({'[c', bang = true})
+      else
+        gitsigns.nav_hunk('prev')
+      end
+    end)
+
+    -- Actions
+    map('n', '<leader>hs', gitsigns.stage_hunk)
+    map('n', '<leader>hr', gitsigns.reset_hunk)
+    map('v', '<leader>hs', function() gitsigns.stage_hunk {vim.fn.line('.'), vim.fn.line('v')} end)
+    map('v', '<leader>hr', function() gitsigns.reset_hunk {vim.fn.line('.'), vim.fn.line('v')} end)
+    map('n', '<leader>hS', gitsigns.stage_buffer)
+    map('n', '<leader>hu', gitsigns.undo_stage_hunk)
+    map('n', '<leader>hR', gitsigns.reset_buffer)
+    map('n', '<leader>hp', gitsigns.preview_hunk)
+    map('n', '<leader>hb', function() gitsigns.blame_line{full=true} end)
+    map('n', '<leader>tb', gitsigns.toggle_current_line_blame)
+    map('n', '<leader>hd', gitsigns.diffthis)
+    map('n', '<leader>hD', function() gitsigns.diffthis('~') end)
+    map('n', '<leader>td', gitsigns.toggle_deleted)
+
+    -- Text object
+    map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
+  end
+}
