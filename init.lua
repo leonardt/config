@@ -16,7 +16,8 @@ vim.g.mapleader = " "
 require("lazy").setup({
   {'nvim-telescope/telescope.nvim',
    tag = '0.1.5',
-   dependencies = { 'nvim-lua/plenary.nvim' },
+   dependencies = { 'nvim-lua/plenary.nvim', 'BurntSushi/ripgrep' ,
+      'nvim-telescope/telescope-fzf-native.nvim'},
    lazy = false},
   {
     "catppuccin/nvim",
@@ -44,6 +45,7 @@ require("lazy").setup({
        indent = { enable = true }
      })
    end},
+  { 'nvim-telescope/telescope-fzf-native.nvim', build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release' },
   {"hrsh7th/nvim-cmp",
    event = "InsertEnter",
    dependencies = {
@@ -166,6 +168,31 @@ require("lazy").setup({
   },
   {
     "lewis6991/gitsigns.nvim"
+  },
+  {
+    "scalameta/nvim-metals",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    ft = { "scala", "sbt", "java" },
+    opts = function()
+      local metals_config = require("metals").bare_config()
+      metals_config.on_attach = function(client, bufnr)
+        -- your on_attach function
+      end
+  
+      return metals_config
+    end,
+    config = function(self, metals_config)
+      local nvim_metals_group = vim.api.nvim_create_augroup("nvim-metals", { clear = true })
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = self.ft,
+        callback = function()
+          require("metals").initialize_or_attach(metals_config)
+        end,
+        group = nvim_metals_group,
+      })
+    end
   }
 })
 
@@ -190,7 +217,7 @@ vim.cmd.colorscheme "catppuccin-mocha"
 require('lualine').setup()
 
 local builtin = require('telescope.builtin')
-vim.keymap.set('n', '<leader>ff', builtin.git_files, {})
+vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
 vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
 vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
