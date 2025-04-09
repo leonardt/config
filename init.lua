@@ -1,3 +1,6 @@
+local map = vim.keymap.set
+local fn = vim.fn
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
@@ -70,8 +73,7 @@ require("lazy").setup({
          ['<C-f>'] = cmp.mapping.scroll_docs(4),
          ['<C-Space>'] = cmp.mapping.complete(),
          ['<C-e>'] = cmp.mapping.abort(),
-
-         --['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+         ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
        }),
        sources = cmp.config.sources({
          { name = 'nvim_lsp' },
@@ -336,6 +338,7 @@ vim.opt.expandtab = true
 
 vim.opt.number = true
 vim.opt.relativenumber = true
+vim.opt.undofile = true
 
 vim.cmd.colorscheme "catppuccin-mocha"
 require('lualine').setup()
