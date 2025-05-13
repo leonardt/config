@@ -244,7 +244,7 @@ require("lazy").setup({
         map("n", "<leader>cl", vim.lsp.codelens.run)
         map("n", "<leader>sh", vim.lsp.buf.signature_help)
         map("n", "<leader>rn", vim.lsp.buf.rename)
-        map("n", "<leader>f", vim.lsp.buf.format)
+        map("n", "<leader>gq", vim.lsp.buf.format)
         map("n", "<leader>ca", vim.lsp.buf.code_action)
 
         map("n", "<leader>ws", function()
@@ -318,10 +318,11 @@ require("lazy").setup({
         group = nvim_metals_group,
       })
     end
-
-  }
+  },
+  {"karloskar/poetry-nvim", lazy=false}
 })
 
+vim.opt_global.completeopt = { "menuone", "noinsert", "noselect" }
 vim.opt.autoindent = true
 vim.opt.smartindent = true
 vim.opt.tabstop = 2
@@ -410,7 +411,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
     vim.keymap.set({ 'n', 'v' }, '<space>ca', vim.lsp.buf.code_action, opts)
     vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-    vim.keymap.set('n', '<space>f', function()
+    vim.keymap.set('n', '<space>gq', function()
       vim.lsp.buf.format { async = true }
     end, opts)
   end,
